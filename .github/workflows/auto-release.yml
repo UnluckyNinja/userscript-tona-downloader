@@ -1,0 +1,57 @@
+name: Release Please Action
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    environment: Action to trigger other Action
+    strategy:
+      matrix:
+        node-version: [22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Release Please Action
+        id: release-please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.ACTION_PAT }}
+          release-type: node
+          target-branch: ${{ github.ref_name }}
+
+      - name: Build output
+        run: pnpm build
+        env:
+          RESOLVED_VERSION: >-
+            ${{ steps.release-please.outputs.version }}
+
+      - name: Upload file
+        uses: AButler/upload-release-assets@v3.0
+        if: ${{ steps.release-please.outputs.release_created }}
+        with:
+          release-tag: ${{ steps.release-please.outputs.tag_name }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./dist/ffxiv-lodestone-translator.user.js
