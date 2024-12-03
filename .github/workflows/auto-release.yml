@@ -54,4 +54,4 @@ jobs:
         with:
           release-tag: ${{ steps.release-please.outputs.tag_name }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./dist/ffxiv-lodestone-translator.user.js
+          files: ./dist/tonarinoyj-downloader.user.js
