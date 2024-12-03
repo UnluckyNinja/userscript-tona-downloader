@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         id: artifact
         with:
-          path: dist/ffxiv-lodestone-translator.user.js
+          path: dist/tonarinoyj-downloader.user.js
 
       - name: Notify about the result of this deployment if failed
         if: ${{ steps.build.outcome != 'success' }}
