@@ -26,7 +26,7 @@ export function remap(a: number, b: number, m: number, n: number, x: number, cla
 }
 
 export function solve(options: {
-  image: CanvasImageSource
+  image: HTMLImageElement
   DIVIDE_NUM: number
   cell_width: number
   cell_height: number
@@ -39,7 +39,9 @@ export function solve(options: {
     cell_height,
     context2d,
   } = options
-  // this.view.drawImage(0, 0, this.width, this.height, 0, 0);
+  const fullW = image.naturalWidth
+  const fullH = image.naturalHeight
+  context2d.drawImage(image, 0, 0, fullW, fullH, 0, 0, fullW, fullH)
   for (let e = 0; e < DIVIDE_NUM * DIVIDE_NUM; e++) {
     const srcY = Math.floor(e / DIVIDE_NUM) * cell_height
     const srcX = (e % DIVIDE_NUM) * cell_width

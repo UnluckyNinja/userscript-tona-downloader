@@ -10,7 +10,7 @@ const {
   MULTIPLE,
 } = useOptions()
 
-const text = ref('下载章节')
+const text = ref('下载本章节（下载完成后需再次点击以保存）')
 const result = ref<Awaited<ReturnType<typeof downloadImagesAsZIP>>>(null)
 const lockButton = ref(false)
 async function download() {
@@ -24,7 +24,7 @@ async function download() {
       console.error(e)
     }
 
-    text.value = '点击下载'
+    text.value = '下载完成，点击保存'
     lockButton.value = false
   } else {
     const a = document.createElement('a')
