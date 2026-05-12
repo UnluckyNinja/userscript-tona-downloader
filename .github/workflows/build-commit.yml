@@ -1,0 +1,33 @@
+name: Build commit
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24]
+    steps:
+      - name: Setup JS
+        uses: sxzz/workflows/setup-js@main
+        with:
+          fetch-all: true
+
+      - name: Build
+        run: pnpm build
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload output
+        uses: actions/upload-artifact@v7
+        with:
+          path: ./dist/tonarinoyj-downloader.user.js
+          archive: false
