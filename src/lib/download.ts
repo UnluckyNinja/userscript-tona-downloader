@@ -55,7 +55,7 @@ export async function downloadImagesAsZIP(status: Ref<string>) {
   })
   if (!zipped) return null
 
-  const finalBlob = new Blob([zipped.buffer], { type: 'application/zip' })
+  const finalBlob = new Blob([zipped.buffer as ArrayBuffer], { type: 'application/zip' })
   return {
     title,
     blob: finalBlob,

@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
+import unocssInline from 'unocss-inline'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
@@ -7,7 +8,6 @@ import Inspect from 'vite-plugin-inspect'
 import monkey from 'vite-plugin-monkey'
 import packgeJson from './package.json'
 import Rexport from './plugin/rexport'
-import unocssInline from 'unocss-inline';
 
 export default defineConfig(config => ({
   plugins: [
@@ -25,23 +25,26 @@ export default defineConfig(config => ({
     config.mode === 'test'
       ? undefined
       : monkey({
-        entry: 'src/main.ts',
-        userscript: {
-          icon: 'https://api.iconify.design/hugeicons:translation.svg?color=%230080ff',
-          version: process.env.RESOLVED_VERSION ?? packgeJson.version,
-          name: 'tonarinoyj 下载工具',
-          namespace: 'unlucky.ninja',
-          author: 'UnluckyNinja',
-          match: ['https://tonarinoyj.jp/episode/*'],
-        },
+          entry: 'src/main.ts',
+          userscript: {
+            icon: 'https://api.iconify.design/hugeicons:translation.svg?color=%230080ff',
+            version: process.env.RESOLVED_VERSION ?? packgeJson.version,
+            name: 'tonarinoyj 下载工具',
+            namespace: 'unlucky.ninja',
+            author: 'UnluckyNinja',
+            match: ['https://tonarinoyj.jp/episode/*'],
+          },
         // build: {
         //   externalGlobals: {
         //     vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js'),
         //   },
         // },
-      }),
+        }),
     Inspect(),
   ],
+  build: {
+    cssMinify: false,
+  },
 
   resolve: {
     alias: {

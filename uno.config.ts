@@ -1,4 +1,4 @@
-import { defineConfig, presetIcons, presetTypography, presetWind4 } from 'unocss'
+import { defineConfig, presetIcons, presetTypography, presetWind4, transformerDirectives, transformerVariantGroup } from 'unocss'
 import presetAnimations from 'unocss-preset-animations'
 import { presetShadcn } from 'unocss-preset-shadcn'
 
@@ -21,6 +21,15 @@ export default defineConfig({
       },
     ),
   ],
+
+  transformers: [
+    transformerDirectives(),
+    transformerVariantGroup(),
+  ],
+
+  outputToCssLayers: {
+    allLayers: true,
+  },
 
   // By default, `.ts` and `.js` files are NOT extracted.
   // If you want to extract them, use the following configuration.
