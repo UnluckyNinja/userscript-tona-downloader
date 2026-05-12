@@ -27,7 +27,7 @@ watch(expended, (newVal) => {
 
 <template>
   <div
-    ref="root" class="fixed top-10 flex items-center h-12 right-0 z-99999 bg-blue-5 transition-transform"
+    ref="root" class="fixed top-10 flex items-center h-12 right-0 z-99999 bg-blue-500 transition-transform"
     :class="[expended ? '' : 'translate-x-full']"
     :style="{ opacity: alpha }"
   >
@@ -39,7 +39,7 @@ watch(expended, (newVal) => {
       <div class="i-carbon-settings w-8 h-8 text-white" />
     </div>
     <div
-      class="absolute right-full top-0 bottom-0 border-r border-color-blue-3 border-solid w-4 rounded-l-md text-white cursor-pointer bg-blue-5"
+      class="absolute right-full top-0 bottom-0 border-r border-color-blue-300 border-solid w-4 rounded-l-md text-white cursor-pointer bg-blue-500"
       @click="toggleExpended()"
     >
       <div class="w-full h-full flex items-center rounded-l-md hover:backdrop-brightness-125 active:backdrop-brightness-50">

@@ -7,12 +7,14 @@ import Inspect from 'vite-plugin-inspect'
 import monkey from 'vite-plugin-monkey'
 import packgeJson from './package.json'
 import Rexport from './plugin/rexport'
+import unocssInline from 'unocss-inline';
 
 export default defineConfig(config => ({
   plugins: [
     vue(),
     Rexport(),
     UnoCSS(),
+    unocssInline(),
     AutoImport({
       imports: [
         'vue',

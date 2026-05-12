@@ -1,38 +1,48 @@
-import resetCss from '@unocss/reset/tailwind.css?inline'
-import unoCss from 'virtual:uno.css?inline'
+import unoCss from 'unocss-inline/style'
 import { createApp } from 'vue'
+
 import App from './App.vue'
+// wrap widget in shadow DOM to avoid polluting page
+import { portalTarget, shadowRoot } from './shadowRoot'
+
 import styleCss from './style.css?inline'
 
-const app = createApp(App)
-const wrapper = document.createElement('div')
-document.body.append(wrapper)
-const shadow = wrapper.attachShadow({ mode: 'open' })
-const element = document.createElement('div')
-shadow.appendChild(element)
+const appStyleSheet = new CSSStyleSheet()
+appStyleSheet.replaceSync(styleCss)
+shadowRoot.adoptedStyleSheets.push(appStyleSheet)
 
-app.mount(element)
+createApp(App).mount(portalTarget)
 
-function addStyle(content: string) {
-  const cssEle = document.createElement('style')
-  cssEle.textContent = content
-  shadow.appendChild(cssEle)
-  return cssEle
-}
-addStyle(resetCss)
-const unoEle = addStyle(unoCss)
-const styleEle = addStyle(styleCss)
+// @property unfortunately will be ignored in shadow DOM,
+// so we have to move them to the root document.
+// there are some other directives in it, I guess it won't hurt though.
+const sheet = new CSSStyleSheet()
+const mo = new MutationObserver((list, obs) => {
+  // console.log(list)
+  const text = unoCss.textContent.split('\n').filter(it => it.startsWith('@') && it.endsWith('}')).join('\n')
+  // console.log(text)
+  sheet.replaceSync(text)
+})
 
+// observe unocss style element change to hoist @property lines
+// in Chrome: childList is needed
+// in Firefox: subtree + characterData will work, while childList will not work.
+mo.observe(unoCss, {
+  childList: true,
+  subtree: true,
+  characterData: true,
+})
+
+shadowRoot.appendChild(unoCss)
+document.adoptedStyleSheets.push(sheet)
+
+// HMR for styles
 if (import.meta.hot) {
   import.meta.hot.accept([
     './style.css?inline',
-    '/__uno.css?inline',
-  ], ([styleCss, unoCss]) => {
+  ], ([styleCss]) => {
     if (styleCss) {
-      styleEle.textContent = styleCss.default
-    }
-    if (unoCss) {
-      unoEle.textContent = unoCss.default
+      appStyleSheet.replace(styleCss.default)
     }
   })
 }

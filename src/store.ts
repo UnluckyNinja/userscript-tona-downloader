@@ -16,15 +16,18 @@ export const useOptions = createGlobalState(
   () => {
     const DIVIDE_NUM = useStorage('DIVIDE_NUM', 4, storage)
     const MULTIPLE = useStorage('MULTIPLE', 8, storage)
+    const USE_CREDENTIALS = useStorage('USE_CREDENTIALS', false, storage)
 
     function resetOptions() {
       DIVIDE_NUM.value = 4
       MULTIPLE.value = 8
+      USE_CREDENTIALS.value = false
     }
 
     return {
       DIVIDE_NUM,
       MULTIPLE,
+      USE_CREDENTIALS,
       resetOptions,
     }
   },

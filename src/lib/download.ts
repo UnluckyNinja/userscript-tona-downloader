@@ -1,7 +1,7 @@
 import type { Root } from './json'
 import { GM } from '$'
-import { useOptions } from '@/store'
 import { zip } from 'fflate'
+import { useOptions } from '@/store'
 import { solve } from './utils'
 
 // const map = new Map([
@@ -12,14 +12,17 @@ import { solve } from './utils'
 //   ['image/gif', '.gif'],
 // ])
 
-export async function downloadImagesAsZIP(status: Ref<string>) {
-  status.value = '准备下载……'
-  const jsonURL = `${window.location.href}.json`
-  const json = (await GM.xmlHttpRequest({
-    url: jsonURL,
+export async function getChapterInfo(url = `${window.location.href}.json`) {
+  return (await GM.xmlHttpRequest({
+    url,
     method: 'GET',
     responseType: 'json',
   }) as any).response as Root
+}
+
+export async function downloadImagesAsZIP(status: Ref<string>) {
+  status.value = '准备下载……'
+  const json = await getChapterInfo(`${window.location.href}.json`)
 
   const title = json.readableProduct.title
   const urls = json.readableProduct.pageStructure.pages.filter(it => it.src).map(it => it.src) as string[]
@@ -35,7 +38,7 @@ export async function downloadImagesAsZIP(status: Ref<string>) {
 
   status.value = '打包中……'
   const digits = (blobs.length + 1).toString().length
-  const files = {} as Record<string, Uint8Array>
+  const files = {} as Record<string, Uint8Array<ArrayBuffer>>
   for (let i = 0; i < blobs.length; i++) {
     const blob = blobs[i]
     files[`${(i + 1).toString().padStart(digits, '0')}.png`] = new Uint8Array(await blob.arrayBuffer())
@@ -60,8 +63,8 @@ export async function downloadImagesAsZIP(status: Ref<string>) {
 }
 
 let lastRequestTime = 0
-async function drawImage(canvas: OffscreenCanvas, url: string): Promise<Blob> {
-  const { DIVIDE_NUM, MULTIPLE } = useOptions()
+export async function drawImage(canvas: OffscreenCanvas, url: string): Promise<Blob> {
+  const { DIVIDE_NUM, MULTIPLE, USE_CREDENTIALS } = useOptions()
   if (Date.now() - lastRequestTime < 200) {
     await new Promise(r => setTimeout(r, 200 - (Date.now() - lastRequestTime)))
   }
@@ -69,7 +72,11 @@ async function drawImage(canvas: OffscreenCanvas, url: string): Promise<Blob> {
 
   const image = new Image()
   image.src = url
-  image.crossOrigin = 'use-credentials'
+  if (USE_CREDENTIALS.value) {
+    image.crossOrigin = 'use-credentials'
+  } else {
+    image.crossOrigin = 'anonymous'
+  }
   await new Promise(r => image.addEventListener('load', r))
 
   canvas.width = image.naturalWidth
@@ -84,5 +91,7 @@ async function drawImage(canvas: OffscreenCanvas, url: string): Promise<Blob> {
   }
   solve(options)
 
-  return await canvas.convertToBlob()
+  return await canvas.convertToBlob({
+    quality: 1,
+  })
 }
